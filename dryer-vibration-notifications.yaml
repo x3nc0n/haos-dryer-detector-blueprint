@@ -1560,9 +1560,9 @@ actions:
               count: !input end_repeat_count
               sequence:
                 - wait_for_trigger:
-                    - trigger: state
+                    - platform: state
                       entity_id: !input vibration_sensor
-                      below: !input end_vibration_state
+                      to: !input end_vibration_state
                       for:
                         minutes: !input end_time_delay
   - choose:
