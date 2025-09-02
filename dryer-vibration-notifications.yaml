@@ -1,28 +1,23 @@
 blueprint:
-  name: Appliance Notifications & Actions
+  name: Dryer Vibration Notifications & Actions
   description: >
-    # 📳 Appliance Notifications & Actions
+    # 📳 Dryer Vibration Notifications & Actions
     
-    **Version: 3.7**
+    **Version: 0.9**
 
 
-    🤔 Watts your appliance up to, you're always in the know from start to finish! 🛎️🔌💸
-    
-    
-    **If you like my blueprints, and would like to show your support or just say thank you?** [Click Here](https://www.paypal.com/donate/?hosted_button_id=WAZS3QSDTPGA8) 🙂
-    
+    🤔 Good vibes only! 🛎️🔌💸    
     
     <details>
     <summary><b>The Automation Process:</b> 👈</summary>
 
       - **Appliance Trigger:**
-          - Enter the power sensor entity that measures the live current draw of the appliance. Common devices with these sensors include smart plugs, energy meters, etc.
-          - The automation is triggered when the appliance's current draw exceeds a set wattage.
-          - The automation ends when the appliance's current draw falls below a set value.
+          - Enter the vibration sensor entity.
+          - The automation is triggered when the appliance's vibration is detected.
+          - The automation ends when the appliance's vibration stops.
 
       - **Notification Options:**
           - Send notification messages to one or multiple devices when the appliance starts, finishes or the watchdog is triggered.
-          - Your end message can also include estimates of total power consumption and cost.
           - Include duration tracking in your end message to track the appliance's operational time for the task or cycle.
           - Opt to sends a repeated notifications to remind you when the appliance cycle is complete.
           - Limit when notifications can be sent by using Notify Time Restrictions - helpful for avoiding alerts while you're asleep.
@@ -33,12 +28,6 @@ blueprint:
 
       - **Notify Time Restrictions:**
           - Restrict notifications to the specified start and end times on the selected days. Notifications outside this time range will be skipped.
-
-      - **Energy Tracking:**
-          - Use energy tracking to estimate the total energy usage (kWh) for each completed cycle. You can also choose to include the estimated cost of that cycle in the end notification.
-          - Or simply update the start and end helpers without including any energy information in the end notification - useful for your own custom actions or other Home Assistant logic.
-          
-          ⚠️ **Disclaimer** - These values are estimates and should only be used as a guide. Please avoid relying solely on these estimates for accuracy and use them at your own risk. We cannot be held responsible for any inaccuracies or resulting losses, damages, inconvenience, or anything else that may occur.
 
       - **Time Tracking:**
           - Runtime Tracking - Records the total runtime of your appliance by updating a text helper each time it completes a full cycle.
@@ -67,13 +56,6 @@ blueprint:
       - **Custom Conditions:**
           - Enter any custom conditions to further customize the automation process.
     </details>
-    
-    
-    Need help? 
-
-    - FAQ: [Click Here](https://community.home-assistant.io/t/650166/2)
-  
-    - Community Support Including Updates: [Click Here](https://community.home-assistant.io/t/650166)
 
 
     Required = *
