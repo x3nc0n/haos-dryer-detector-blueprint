@@ -1379,7 +1379,7 @@ variables:
     {{ '%02d:%02d:%02d' | format(duration_hours, duration_minutes, duration_seconds) }}
 
 triggers:
-  - trigger: numeric_state
+  - trigger: state
     id: "t0"
     entity_id: !input vibration_sensor
     above: !input start_vibration_state
@@ -1476,7 +1476,7 @@ actions:
               count: !input end_repeat_count
               sequence:
                 - wait_for_trigger:
-                    - trigger: numeric_state
+                    - trigger: state
                       entity_id: !input vibration_sensor
                       below: !input end_vibration_state
                       for:
@@ -1562,7 +1562,7 @@ actions:
               count: !input end_repeat_count
               sequence:
                 - wait_for_trigger:
-                    - trigger: numeric_state
+                    - trigger: state
                       entity_id: !input vibration_sensor
                       below: !input end_vibration_state
                       for:
