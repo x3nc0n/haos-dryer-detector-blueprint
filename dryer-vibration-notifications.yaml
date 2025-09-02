@@ -743,113 +743,6 @@ blueprint:
                   value: "sat"
                 - label: Sunday
                   value: "sun"
-    power_tracking_settings:
-      name: "Energy Tracking"
-      icon: mdi:meter-electric-outline
-      collapsed: true
-      input:
-        include_power_tracking:
-          name: Use the Energy Tracking Option (Optional)
-          description: >
-            Choose whether to track energy consumption for each completed cycle.
-            This lets you monitor how much energy is used every time a cycle finishes.
-
-
-            You can choose to:
-              - Include energy usage details (kWh) in the end notification.
-              - Include both energy usage and an estimated cost in the end notification.
-              - Or simply update the start and end helpers without including any energy information in the end notification - useful for your own custom actions or other Home Assistant logic.
-            
-            
-            ⚠️ **Disclaimer** - These values are estimates and should only be used as a guide.
-            Please avoid relying solely on these estimates for accuracy and use them at your own risk.
-            We cannot be held responsible for any inaccuracies or resulting losses, damages, inconvenience, or anything else that may occur.
-
-
-            For more information on how to use energy tracking [Click Here](https://community.home-assistant.io/t/650166/97)
-          default: disable_power_tracking
-          selector:
-            select:
-              options:
-                - label: Enable - End Notify with Energy Used (kWh)
-                  value: enable_power_tracking
-                - label: Enable - End Notify with Energy Used + Estimated Cost
-                  value: enable_power_tracking_and_cost
-                - label: Enable - Update Start & End Helpers Only
-                  value: enable_start_end_helpers
-                - label: Disable - Energy Tracking
-                  value: disable_power_tracking
-        power_consumption_sensor:
-          name: Energy Tracking - Energy Sensor
-          description: >
-            Select the sensor that reports the total energy used in kilowatt-hours (kWh).
-            This can be either a cumulative total or a daily value. 
-            
-            
-            **Note** If you select a daily total sensor that resets at midnight, the data may be inaccurate for cycles that span across two days.
-            This is because the energy value should increase continuously throughout the cycle, without resetting to 0.0 kWh partway through.
-
-
-            Also, keep in mind that the blueprint takes a snapshot of the sensor's value at the start and end of the cycle.
-            If your energy sensor updates infrequently, it may not reflect the exact values at those moments, which can affect the start and end helpers, as well as the estimated energy usage and cost.
-          default: []
-          selector:
-            entity:
-              filter:
-                domain: sensor
-        end_message_kwh:
-          name: Energy Tracking - End Message - Energy Consumption
-          description: >
-            Enter the title used in the end notification for the estimated energy usage value.
-            This label is shown directly before the estimated energy usage (kWh) in the end notification.
-          default: Consumption 
-          selector:
-            text:
-        end_message_cost:
-          name: Energy Tracking - End Message - Cost
-          description: >
-            Enter the title used in the end notification for the estimated cost.
-            This label is shown directly before the estimated cost value in the end notification.
-          default: Approx Cost $
-          selector:
-            text:
-        cost_per_kwh:
-          name: Energy Tracking - Cost per kWh
-          description: >
-            Please enter your number helper or an energy sensor to specify the electricity rate per kWh.
-
-
-            **Note** - Keep in mind that the rate used is determined when the appliance ends and remains constant throughout the cycle, even if your energy sensor value changes based on the time of day.
-            This may result in an inaccurate estimated cost if your electricity pricing varies during the cycle.
-          default: []
-          selector:
-            entity:
-              filter:
-                domain: 
-                  - input_number
-                  - sensor
-        start_power_consumption:
-          name: Energy Tracking - Start Number Helper
-          description: >
-            Select a number helper to store the kWh reading at the **start** of the cycle.
-            This must be a completely independent helper, and must not be the same one used
-            in the 'Energy Tracking - End Number Helper' input below.
-          default: []
-          selector:
-            entity:
-              filter:
-                domain: input_number
-        end_power_consumption:
-          name: Energy Tracking - End Number Helper
-          description: >
-            Select a number helper to store the kWh reading at the **end** of the cycle.
-            This must be a completely independent helper, and must not be the same one used
-            in the 'Energy Tracking - Start Number Helper' input above.
-          default: []
-          selector:
-            entity:
-              filter:
-                domain: input_number
     time_tracking_settings:
       name: "Time Tracking"
       icon: mdi:timer-sand-complete
@@ -1302,10 +1195,10 @@ mode: single
 max_exceeded: silent
 
 variables:
-  power_sensor: !input power_sensor
-  start_appliance_power: !input start_appliance_power
+  vibration_sensor: !input vibration_sensor
+  start_vibration_state: !input start_vibration_state
   start_time_delay: !input start_time_delay
-  end_appliance_power: !input end_appliance_power
+  end_vibration_state: !input end_vibration_state
   end_time_delay: !input end_time_delay
   end_repeat_count: !input end_repeat_count
   include_start_notify: !input include_start_notify
@@ -1348,13 +1241,6 @@ variables:
   after_time: !input after_time
   before_time: !input before_time
   weekday_options: !input weekday_options
-  include_power_tracking: !input include_power_tracking
-  power_consumption_sensor: !input power_consumption_sensor
-  end_message_kwh: !input end_message_kwh
-  end_message_cost: !input end_message_cost
-  cost_per_kwh: !input cost_per_kwh
-  start_power_consumption: !input start_power_consumption
-  end_power_consumption: !input end_power_consumption
   start_time: "{{ now().timestamp() }}"
   include_runtime_tracking: !input include_runtime_tracking
   runtime_tracking_helper: !input runtime_tracking_helper
@@ -1514,8 +1400,8 @@ variables:
 triggers:
   - trigger: numeric_state
     id: "t0"
-    entity_id: !input power_sensor
-    above: !input start_appliance_power
+    entity_id: !input vibration_sensor
+    above: !input start_vibration_state
     below: "24000"
     for:
       minutes: !input start_time_delay
@@ -1528,17 +1414,6 @@ conditions:
     conditions: !input global_conditions
 
 actions:
-  - choose:
-    - alias: "Check if power tracking is enabled"
-      conditions:
-        - condition: template
-          value_template: "{{ include_power_tracking != 'disable_power_tracking' }}"
-      sequence:
-        - action: input_number.set_value
-          target:
-            entity_id: !input start_power_consumption
-          data_template:
-            value: "{{ states(power_consumption_sensor) | float }}"
   - choose:
     - alias: "Check if start of notification is enabled"
       conditions:
@@ -1621,8 +1496,8 @@ actions:
               sequence:
                 - wait_for_trigger:
                     - trigger: numeric_state
-                      entity_id: !input power_sensor
-                      below: !input end_appliance_power
+                      entity_id: !input vibration_sensor
+                      below: !input end_vibration_state
                       for:
                         minutes: !input end_time_delay
                   timeout: "{{ watchdog_duration }}"
@@ -1707,21 +1582,10 @@ actions:
               sequence:
                 - wait_for_trigger:
                     - trigger: numeric_state
-                      entity_id: !input power_sensor
-                      below: !input end_appliance_power
+                      entity_id: !input vibration_sensor
+                      below: !input end_vibration_state
                       for:
                         minutes: !input end_time_delay
-  - choose:
-    - alias: "Check if power tracking is enabled"
-      conditions:
-        - condition: template
-          value_template: "{{ include_power_tracking != 'disable_power_tracking' }}"
-      sequence:
-        - action: input_number.set_value
-          target:
-            entity_id: !input end_power_consumption
-          data_template:
-            value: "{{ states(power_consumption_sensor) | float }}"
   - choose:
     - alias: "Check if Runtime tracking is enabled"
       conditions:
@@ -1882,16 +1746,6 @@ actions:
                         {% endif %}
                       {% endif %}
                       {% set message.text = message.text + end_message %}
-                      {% if include_power_tracking == 'enable_power_tracking' %}
-                        {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
-                        {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
-                      {% endif %}
-                      {% if include_power_tracking == 'enable_power_tracking_and_cost' %}
-                        {% set kwh = (states(end_power_consumption) | float - states(start_power_consumption) | float) %}
-                        {% set cost = kwh * (states(cost_per_kwh) | float) %}
-                        {% set message.text = message.text + '\n' + end_message_kwh + ' ' + (kwh | round(2) | string) + ' kWh' %}
-                        {% set message.text = message.text + '\n' + end_message_cost + (cost | round(2) | string) %}
-                      {% endif %}
                       {% if include_runtime_tracking == 'enable_runtime_tracking_and_notify' %}
                         {% set run_time = states(runtime_tracking_helper) %}
                         {% set message.text = message.text + '\n' + runtime_tracking_end_message + ' ' + run_time %}
