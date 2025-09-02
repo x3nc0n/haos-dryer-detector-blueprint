@@ -1396,7 +1396,8 @@ triggers:
   - trigger: state
     id: "t0"
     entity_id: !input vibration_sensor
-  # removed invalid numeric_state keys for vibration sensor
+    above: !input start_vibration_state
+    below: "24000"
     for:
       minutes: !input start_time_delay
 
@@ -1491,7 +1492,7 @@ actions:
                 - wait_for_trigger:
                     - trigger: state
                       entity_id: !input vibration_sensor
-                      # removed invalid numeric_state key for vibration sensor
+                      below: !input end_vibration_state
                       for:
                         minutes: !input end_time_delay
                   timeout: "{{ watchdog_duration }}"
@@ -1577,7 +1578,7 @@ actions:
                 - wait_for_trigger:
                     - trigger: state
                       entity_id: !input vibration_sensor
-                      # removed invalid numeric_state key for vibration sensor
+                      below: !input end_vibration_state
                       for:
                         minutes: !input end_time_delay
   - choose:
