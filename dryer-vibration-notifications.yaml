@@ -215,14 +215,6 @@ blueprint:
               to: !input end_vibration_state
               for:
                 minutes: !input end_time_delay
-
-            You can use the same tag across start, end, and watchdog notifications to ensure only one active notification remains throughout the appliance cycle.
-
-
-            If this input is left blank, no tag will be applied and each notification will be treated as separate.
-
-
-            For best results, use short, unique tags for each automation - for example: `washing-clothes`, `drying-clothes`, `washing-dishes`, etc.
           default: []
           selector:
             text:
@@ -1397,7 +1389,6 @@ triggers:
     id: "t0"
     entity_id: !input vibration_sensor
     above: !input start_vibration_state
-    below: "24000"
     for:
       minutes: !input start_time_delay
 
