@@ -76,7 +76,7 @@ blueprint:
           selector:
             entity:
               filter:
-                domain: sensor
+                domain: binary_sensor
         start_vibration_state:
           name: Start - Vibration State
           description: >
