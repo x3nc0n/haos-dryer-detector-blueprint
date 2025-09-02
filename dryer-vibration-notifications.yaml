@@ -182,25 +182,39 @@ blueprint:
                 - integration: mobile_app
               multiple: true
         start_title:
-          name: Title
-          description: >
-            Enter in the notification title that you would like to receive when the appliance starts.
-          default: Washing Machine
-          selector:
-            text:
-        start_message:
-          name: Message
-          description: >
-            Enter in the notification message that you would like to receive when the appliance starts.
-          default: YES! Another load is ON :)
-          selector:
-            text:
-        start_notify_tag:
-          name: Notification Tag
-          description: >
-            Use a tag to keep your notifications organized.
-            When a new notification with the same tag is sent, it replaces the old one, so you won't get cluttered with multiple notifications for the same appliance.
+          mode: single
+          max_exceeded: silent
 
+          variables:
+            vibration_sensor: !input vibration_sensor
+            start_vibration_state: !input start_vibration_state
+            start_time_delay: !input start_time_delay
+            end_vibration_state: !input end_vibration_state
+            end_time_delay: !input end_time_delay
+            end_repeat_count: !input end_repeat_count
+            include_start_notify: !input include_start_notify
+            start_notify_device: !input start_notify_device
+            start_title: !input start_title
+            start_message: !input start_message
+            start_notify_tag: !input start_notify_tag
+            start_notify_interruption_level: !input start_notify_interruption_level
+            start_notify_sound: !input start_notify_sound
+            start_notify_data: !input start_notify_data
+            global_conditions: !input global_conditions
+
+          trigger:
+            - platform: state
+              entity_id: !input vibration_sensor
+              from: 'off'
+              to: !input start_vibration_state
+              for:
+                minutes: !input start_time_delay
+            - platform: state
+              entity_id: !input vibration_sensor
+              from: !input start_vibration_state
+              to: !input end_vibration_state
+              for:
+                minutes: !input end_time_delay
 
             You can use the same tag across start, end, and watchdog notifications to ensure only one active notification remains throughout the appliance cycle.
 
