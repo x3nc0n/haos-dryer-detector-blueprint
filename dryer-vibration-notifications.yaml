@@ -1382,6 +1382,8 @@ triggers:
   - trigger: state
     id: "t0"
     entity_id: !input vibration_sensor
+    from: 'off'
+    to: 'on'
     for:
       minutes: !input start_time_delay
 
